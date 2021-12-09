@@ -1,13 +1,15 @@
 from collections import deque
+from typing import Tuple, List
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-def get_lowest(heightmap):
+def get_lowest(heightmap: np.ndarray) -> np.ndarray:
     r, c = heightmap.shape
-    padded = np.ones((r+2, c+2)) * np.inf
+    padded = np.ones((r+2, c+2)) * np.inf  # pad map to enable vectorized compare
     padded[1:r+1, 1:c+1] = heightmap[:, ]
+    # compare points to all neighbours
     lowest = padded[1:r+1, 1:c+1] < padded[0:r, 1:c+1]  # up
     lowest = np.logical_and(lowest, padded[1:r+1, 1:c+1] < padded[2:r+2, 1:c+1])
     lowest = np.logical_and(lowest, padded[1:r+1, 1:c+1] < padded[1:r+1, 2:c+2])
@@ -15,11 +17,11 @@ def get_lowest(heightmap):
     return lowest
 
 
-def star1(heightmap):
+def star1(heightmap: np.ndarray) -> int:
     return np.sum(heightmap[get_lowest(heightmap)]+1)
 
 
-def expand(point, map):
+def expand(point: Tuple[int, int], map: np.ndarray) -> List[Tuple[int, int]]:
     r, c = map.shape
     neighbs = []
     if point[0] > 0:
@@ -33,12 +35,11 @@ def expand(point, map):
     return neighbs
 
 
-def get_basin(map, point):
+def get_basin(map: np.ndarray, point: Tuple[int, int]) -> int:
     agenda = deque()
     agenda.append(point)
     visited = set()
     basin_size = 0
-    basin = np.zeros_like(map)
     while len(agenda) > 0:
         current_point = agenda.popleft()
         if current_point in visited:
@@ -46,7 +47,6 @@ def get_basin(map, point):
         visited.add(current_point)
         if map[current_point[0], current_point[1]] != 9:
             basin_size += 1
-            basin[current_point[0], current_point[1]] = 1
             neighbs = expand(current_point, map)
             for neighb in neighbs:
                 agenda.append(neighb)
@@ -54,8 +54,8 @@ def get_basin(map, point):
     return basin_size
 
 
-def star2(heightmap):
-    lowest = np.logical_and(get_lowest(heightmap), heightmap != 9)
+def star2(heightmap: np.ndarray) -> int:
+    lowest = get_lowest(heightmap)
     rows, cols = lowest.nonzero()
     result = {}
     for point in zip(rows, cols):
@@ -69,8 +69,7 @@ if __name__ == '__main__':
         with open('../inputs/day9.txt', 'r') as f:
             inp = f.readlines()
         inp = np.array([list(s.strip()) for s in inp], dtype=int)
-        print(inp)
-        print(star1(inp))
-        print(star2(inp))
+        print(f"Star 1: {star1(inp)}")
+        print(f"Star 2: {star2(inp)}")
 
     _main()
