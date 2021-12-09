@@ -2,7 +2,6 @@ from collections import deque
 from typing import Tuple, List
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 def get_lowest(heightmap: np.ndarray) -> np.ndarray:
@@ -21,8 +20,8 @@ def star1(heightmap: np.ndarray) -> int:
     return np.sum(heightmap[get_lowest(heightmap)]+1)
 
 
-def expand(point: Tuple[int, int], map: np.ndarray) -> List[Tuple[int, int]]:
-    r, c = map.shape
+def expand(point: Tuple[int, int], heightmap: np.ndarray) -> List[Tuple[int, int]]:
+    r, c = heightmap.shape
     neighbs = []
     if point[0] > 0:
         neighbs.append((point[0]-1, point[1]))
@@ -35,7 +34,7 @@ def expand(point: Tuple[int, int], map: np.ndarray) -> List[Tuple[int, int]]:
     return neighbs
 
 
-def get_basin(map: np.ndarray, point: Tuple[int, int]) -> int:
+def get_basin(heightmap: np.ndarray, point: Tuple[int, int]) -> int:
     agenda = deque()
     agenda.append(point)
     visited = set()
@@ -45,9 +44,9 @@ def get_basin(map: np.ndarray, point: Tuple[int, int]) -> int:
         if current_point in visited:
             continue
         visited.add(current_point)
-        if map[current_point[0], current_point[1]] != 9:
+        if heightmap[current_point[0], current_point[1]] != 9:
             basin_size += 1
-            neighbs = expand(current_point, map)
+            neighbs = expand(current_point, heightmap)
             for neighb in neighbs:
                 agenda.append(neighb)
 
