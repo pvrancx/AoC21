@@ -121,8 +121,8 @@ if __name__ == '__main__':
         print(f"Starting...")
         large_inp = get_large_grid(inp)
 
-        print(f"Star 1: {dijkstra(inp, 0, inp.size-1)}")
-        print(f"Star 2: {dijkstra(large_inp, 0, large_inp.size-1)}")
+        print(f"Star 1: {astar(inp, 0, inp.size-1)}")
+        print(f"Star 2: {astar(large_inp, 0, large_inp.size-1)}")
 
         print(f"Finished in: {time.time() - start}s")
 
