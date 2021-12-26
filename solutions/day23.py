@@ -1,8 +1,5 @@
 from heapq import heappop, heappush
 
-import numpy as np
-import matplotlib.pyplot as plt
-
 target_rooms = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
 step_cost = {'A': 1, 'B': 10, 'C': 100, 'D': 1000}
 
@@ -64,7 +61,8 @@ def path_free(world, x1, x2):
 def blocks_other(world,x, y):
     if not is_amp(world, x, y) or not in_room(x, y):
         return False
-    for yi in range(y+1, 2+ room_size(world)):
+    for yi in range(y + 1, 2 + room_size(world)):
+        # check for wrong type amps below us
         if is_amp(world, x, yi) and not in_target_room(world, x, yi):
             return True
     return False
@@ -74,11 +72,13 @@ def can_move(world, x, y):
     if not is_amp(world, x, y):
         return False
     if in_hallway(x, y):
+        # is target room free and can we move there?
         target = target_rooms[value(world, x, y)]
         room_x = room_x_coord(target)
-        start_x = x + 1 if x < room_x else x -1
+        start_x = x + 1 if x < room_x else x - 1
         return room_is_free(world, target) and path_free(world, start_x, room_x)
     elif in_room(x, y):
+        # special case: if in target room but blocking others, we can leave
         return not is_blocked_in_room(world, x, y) and (not in_target_room(world, x, y)
                                                         or blocks_other(world, x, y))
     else:
@@ -190,27 +190,7 @@ if __name__ == '__main__':
     def _main():
         with open('../inputs/day23.txt', 'r') as f:
             world = (*((*line,) for line in f),)
-            #world = [list(line) for line in f]
 
-        # print_state(world)
-        #
-        # nstates = expand(world)
-        # nstate = nstates[16][-1]
-        # print_state(nstate)
-        # nnstates = expand(nstate)
-        #
-        #
-        # for idx, state in enumerate(nnstates):
-        #     print(f"--------------{idx}:{state[0]}--------------")
-        #     print_state(state[-1])
         print(search(world))
-        #
-        # print(value(nstate, 3, 3))
-        # print(in_room(3,3))
-        # print(room_id(3,3))
-        # print(target_rooms[value(world, 3, 3)])
-        # print(in_target_room(nstate, 3, 3))
-
-
 
     _main()
