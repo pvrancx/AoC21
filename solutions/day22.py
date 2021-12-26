@@ -93,7 +93,6 @@ def star2(cmds):
     return sum([v.get_volume() for v in volumes])
 
 
-
 if __name__ == '__main__':
     def _main():
         with open('../inputs/day22.txt', 'r') as f:
