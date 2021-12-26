@@ -67,8 +67,6 @@ def transform_beacons(scanner1, scanner2, scanners, dists):
                           rcond=None)[0]
     rot = np.rint(sol[:3, :]).astype(int)
     trans = np.rint(sol[3:, :]).astype(int)
-    print(dest)
-    print((rot.T@source.T+trans.T).T)
     source_beacons = scanners[scanner1]
     return (rot.T@source_beacons.T+trans.T).T, trans
 
@@ -96,7 +94,6 @@ def merge_scanners(scanners):
         for scanner in visited:
             dists.pop(scanner)
             scanners.pop(scanner)
-        print(scanners.keys())
 
     return scanners
 
@@ -124,7 +121,6 @@ def solve_scanners(scanners, start):
                 beacons = np.vstack([beacons, new_beacons])
         known.append(scanner)
         if len(unknown) == 0:
-            print('done')
             break
     unique_beacons = np.vstack(list({tuple(row) for row in beacons}))
     unique_dists = pdist(unique_beacons)
@@ -236,81 +232,14 @@ if __name__ == '__main__':
                     continue
                 else:
                     beacons.append(tuple(int(s) for s in line.strip().split(',')))
-            inp[scanner] = np.array(beacons, dtype=int)
-            print(inp.keys())
-            # print(inp[27])
-            # # dists = get_dists(inp)
-            # # # print(find_matches(dists, 23))
-            # # # print("27")
-            # # # print(find_matches(dists, 27))
-            # # # print(transform_beacons(27, 19, inp, dists))
-            # #
-            # # print(inp[27])
-            # #
-            # sc, d = solve_scanners(inp, 0)
-            # print(sc.keys())
-            # # # print(sc[0].shape)
-            # # #
-            # sc, d = solve_scanners(sc, 19)
-            # print(sc.keys())
-            # #
-            # #sc, d = solve_scanners(sc, 20)
-            # #print(sc.keys())
-            # # # sc, d = solve_scanners(sc, 0)
-            # # # print(sc.keys())
-            # sc, d = solve_scanners(sc, 23)
-            # print(sc.keys())
-            # # # print(find_matches(d, 0))
-            # # # sc, d = solve_scanners(sc, 20)
-            # # # sc, d = solve_scanners(sc, 27)
-            # # # sc, d = solve_scanners(sc, 23)
-            # # # sc, d = solve_scanners(sc, 0)
-            # # #
-            # # # print(sc.keys())
-            # # # print(sc[0].shape)
-            # # counts = count_matches(inp, dists)
-            # # print(np.sum((counts> 65), -1))
-            # # print(np.where(np.sum((counts>65), -1) < 1))
-            # #
-            # # print(counts[20,:])
-            # # print(counts[23,:])
-            # #
-            # # print(len(all_rotations()))
-            # #
-            # # rot = rotation_matrices_y()[1]
-            # # print(rot)
-            #
-            # # test = np.random.randn(10,3)
-            # # test2 = (rot.T @ test.T + np.array([[10,20,30]]).T).T
-            # # print(brute_force(test2, test))
-            #
-            # b1, b2 = match_beacons(0, 19, sc, d, 5)
-            # rot, offs = brute_force(b1, b2)
-            # assert np.allclose(b1, (rot.T @ b2.T + offs[:, None]).T)
-            # transformed = np.rint((rot.T @ sc[19].T + offs[:, None]).T).astype(int)
-            # print(transformed)
-            # new_beacons = np.vstack([sc[0], transformed])
-            # unique_beacons = np.vstack(list({tuple(row) for row in new_beacons}))
-            # unique_dists = pdist(unique_beacons)
-            # sc[0] = unique_beacons
-            # d[0] = unique_dists
-            #
-            # sc.pop(19)
-            # d.pop(19)
+            inp[scanner] = np.array(beacons, dtype=int)  # don't forget last scanner ...
 
-            #print(sc.keys())
             t = time.time()
             sc, d, o = solve_scanners(inp, 0)
-            print(sc.keys())
-            # test = merge_all(0, inp)
-            # print(test.keys())
-            # test = merge_all(19, test)
-            # print(test.keys())
-            # print(len(test[19]))
-            print(len(sc[0]))
+            print(f"Star 1: {len(sc[0])}")
 
-            offs = np.vstack(o.values())
-            print(np.max(pdist(offs, 'cityblock')))
+            offs = np.vstack(list(o.values()))
+            print(f"Star 2: {int(np.max(pdist(offs, 'cityblock')))}")
             print(time.time() - t)
 
 
